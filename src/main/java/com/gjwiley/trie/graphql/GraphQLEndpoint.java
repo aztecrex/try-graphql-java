@@ -10,21 +10,21 @@ import graphql.servlet.SimpleGraphQLServlet;
 @WebServlet(urlPatterns = "/graphql")
 public class GraphQLEndpoint extends SimpleGraphQLServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-
+       
+    private static GraphQLSchema buildSchema() {
+        final LinkRepository repository = new LinkRepository();
+        return SchemaParser.newParser()
+            .file("schema.graphqls")
+            .resolvers(new Query(repository), new Mutation(repository))
+            .build()
+            .makeExecutableSchema();
+    }
+    
+    
     public GraphQLEndpoint() {
         super(buildSchema());
     }
 
-    private static GraphQLSchema buildSchema() {
-        final LinkRepository linkRepository = new LinkRepository();
-        return SchemaParser.newParser()
-                .file("schema.graphqls")
-                .resolvers(new Query(linkRepository))
-                .build()
-                .makeExecutableSchema();
-    }
+    
 }
